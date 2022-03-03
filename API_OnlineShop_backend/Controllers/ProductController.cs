@@ -23,7 +23,7 @@ namespace API_OnlineShop_backend.Controllers
         {
             return Enumerable.Range(1, 5).Select(index => new Product
             {
-                ProductId = Random.Shared.Next(0, 55),
+                ProductId = index,
                 //ProductName = Random.Shared.Next(0,55),
                 UnitPrice = Random.Shared.Next(0, 55)
             })
