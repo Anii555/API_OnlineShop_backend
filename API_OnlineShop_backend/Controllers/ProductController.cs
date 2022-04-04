@@ -7,16 +7,25 @@ namespace API_OnlineShop_backend.Controllers
     [Route("[controller]")]
     public class ProductController : ControllerBase
     {
-        //    private static readonly string[] Summaries = new[]
-        //       {
-        //    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-        //};
-
-        private readonly NorthwindContext db_context;
+        public NorthwindContext db_context;
 
         public ProductController(NorthwindContext context)
         {
             db_context = context;
+        }
+
+        [HttpPost(Name = "GetAllProduct")]
+        public async Task<IEnumerable<Product>> Get()
+        {
+            return await db_context.Products.ToListAsync();
+        }
+
+        [HttpGet("{id}")]//(Name = "GetProductID")]
+        public async Task<IEnumerable<Product>> Buy(int? id)
+        {
+            //if (id == null) return RedirectToAction("Index");
+            var rez = db_context.Products.Where(x => x.ProductId == id);
+            return await rez.ToListAsync();
         }
 
         //public ProductController(NorthwindContext context)
@@ -38,36 +47,36 @@ namespace API_OnlineShop_backend.Controllers
         //    _logger = logger;
         //}
 
-        [HttpGet(Name = "GetProduct")]
-    //    public IActionResult Get()
-    //    {
-    //        var entity = db_context.Model
-    //.FindEntityType(typeof(Product).FullName);
+        //    var entity = db_context.Model.FindEntityType(typeof(Product).FullName);
+        //    //return db.Products.ToList();
+        //    return Enumerable.Range(1, 5).Select(index => new Product
+        //    {
+        //        ProductId = index,
+        //        ProductName = entity.Name,// db_context.Products.Where(x => x.ProductName.Contains("Chef")),
+        //        UnitPrice = Random.Shared.Next(0, 55)
+        //    })
+        //        .ToList();
+        ////.ToArray();
+        //}
 
-    //        var tableName = entity.GetTableName();
-    //        var schemaName = entity.GetSchema();
-    //        var key = entity.FindPrimaryKey();
-    //        var properties = entity.GetProperties();
+        //    public IActionResult Get()
+        //    {
+        //        var entity = db_context.Model
+        //.FindEntityType(typeof(Product).FullName);
 
-    //        var products = db_context.Products
-    //            .AsNoTracking()
-    //               .Where(s => s.ProductId > 70)
-    //               .ToList();
+        //        var tableName = entity.GetTableName();
+        //        var schemaName = entity.GetSchema();
+        //        var key = entity.FindPrimaryKey();
+        //        var properties = entity.GetProperties();
 
-    //        return Ok(products);
-    //    }
-        public IEnumerable<Product> Get()
-        {
-            var entity = db_context.Model.FindEntityType(typeof(Product).FullName);
-            //return db.Products.ToList();
-            return Enumerable.Range(1, 5).Select(index => new Product
-            {
-                ProductId = index,
-                ProductName = entity.Name,// db_context.Products.Where(x => x.ProductName.Contains("Chef")),
-                UnitPrice = Random.Shared.Next(0, 55)
-            })
-                .ToList();
-        //.ToArray();
-        }
+        //        var products = db_context.Products
+        //            .AsNoTracking()
+        //               .Where(s => s.ProductId > 70)
+        //               .ToList();
+
+        //        return Ok(products);
+        //    }
+
+
     }
 }
