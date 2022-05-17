@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace API_OnlineShop_backend.Controllers
 {
@@ -7,76 +9,26 @@ namespace API_OnlineShop_backend.Controllers
     [Route("[controller]")]
     public class ProductController : ControllerBase
     {
-        public NorthwindContext db_context;
+        private readonly NorthwindContext _context;
 
         public ProductController(NorthwindContext context)
         {
-            db_context = context;
+            _context = context;
         }
 
-        [HttpPost(Name = "GetAllProduct")]
+        [HttpGet(template: "GetAllProduct")]
         public async Task<IEnumerable<Product>> Get()
         {
-            return await db_context.Products.ToListAsync();
+            return await _context.Products.ToListAsync();
         }
 
-        [HttpGet("{id}")]//(Name = "GetProductID")]
-        public async Task<IEnumerable<Product>> Buy(int? id)
+        [HttpGet("{id}")]
+        public async Task<Product> Get(int id)
         {
-            //if (id == null) return RedirectToAction("Index");
-            var rez = db_context.Products.Where(x => x.ProductId == id);
-            return await rez.ToListAsync();
+            Product prod = await _context.Products.FirstOrDefaultAsync(x => x.ProductId == id);
+            
+            if (prod == null) { return null; }
+            else { return prod; }
         }
-
-        //public ProductController(NorthwindContext context)
-        //{
-        //    db = context;
-        //    if (!db.Products.Any())
-        //    {
-        //        db.Products.Add(new Product { ProductId = 5, ProductName = "Apple", UnitPrice = 79900 });
-        //        db.Products.Add(new Product { ProductId = 10, ProductName = "Samsung", UnitPrice = 49900 });
-        //        db.Products.Add(new Product { ProductId = 21, ProductName = "Google", UnitPrice = 52900 });
-        //        db.SaveChanges();
-        //    }
-        //}
-
-        //private readonly ILogger<ProductController> _logger;
-
-        //public ProductController(ILogger<ProductController> logger)
-        //{
-        //    _logger = logger;
-        //}
-
-        //    var entity = db_context.Model.FindEntityType(typeof(Product).FullName);
-        //    //return db.Products.ToList();
-        //    return Enumerable.Range(1, 5).Select(index => new Product
-        //    {
-        //        ProductId = index,
-        //        ProductName = entity.Name,// db_context.Products.Where(x => x.ProductName.Contains("Chef")),
-        //        UnitPrice = Random.Shared.Next(0, 55)
-        //    })
-        //        .ToList();
-        ////.ToArray();
-        //}
-
-        //    public IActionResult Get()
-        //    {
-        //        var entity = db_context.Model
-        //.FindEntityType(typeof(Product).FullName);
-
-        //        var tableName = entity.GetTableName();
-        //        var schemaName = entity.GetSchema();
-        //        var key = entity.FindPrimaryKey();
-        //        var properties = entity.GetProperties();
-
-        //        var products = db_context.Products
-        //            .AsNoTracking()
-        //               .Where(s => s.ProductId > 70)
-        //               .ToList();
-
-        //        return Ok(products);
-        //    }
-
-
     }
 }
