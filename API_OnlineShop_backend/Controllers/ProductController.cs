@@ -16,7 +16,7 @@ namespace API_OnlineShop_backend.Controllers
             _context = context;
         }
 
-        [HttpGet("getAllProduct")]
+        [HttpGet("getAllProducts")]
         public async Task<IEnumerable<Product>> Get()
         {
             return await _context.Products.ToListAsync();
