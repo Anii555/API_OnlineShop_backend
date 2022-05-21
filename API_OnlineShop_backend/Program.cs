@@ -1,4 +1,3 @@
-using Amazon.ElasticMapReduce.Model;
 using API_OnlineShop_backend;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -12,7 +11,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy(name: MyAllowSpecificOrigins,
                       builder =>
                       {
-                          builder.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin(); //настройки запросов с фронта
+                          builder.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin(); //РЅР°СЃС‚СЂРѕР№РєРё Р·Р°РїСЂРѕСЃРѕРІ СЃ С„СЂРѕРЅС‚Р°
                       });
 });
 
@@ -22,8 +21,8 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-//Внедрение БД через строку подключения
-//Спросить подробнее про разницу между AddDbContext и AddDbContextPool (быстрее)
+//Р’РЅРµРґСЂРµРЅРёРµ Р‘Р” С‡РµСЂРµР· СЃС‚СЂРѕРєСѓ РїРѕРґРєР»СЋС‡РµРЅРёСЏ
+//РЎРїСЂРѕСЃРёС‚СЊ РїРѕРґСЂРѕР±РЅРµРµ РїСЂРѕ СЂР°Р·РЅРёС†Сѓ РјРµР¶РґСѓ AddDbContext Рё AddDbContextPool (Р±С‹СЃС‚СЂРµРµ)
 builder.Services.AddDbContextPool<NorthwindContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("NorthwindDatabase"));
