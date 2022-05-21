@@ -1,4 +1,3 @@
-using Amazon.ElasticMapReduce.Model;
 using API_OnlineShop_backend;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -22,8 +21,6 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-//дописала
-builder.Services.AddEntityFrameworkSqlServer();
 //Внедрение БД через строку подключения
 //Спросить подробнее про разницу между AddDbContext и AddDbContextPool (быстрее)
 builder.Services.AddDbContextPool<NorthwindContext>(options =>

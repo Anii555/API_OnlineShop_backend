@@ -16,7 +16,7 @@ namespace API_OnlineShop_backend.Controllers
             _context = context;
         }
 
-        [HttpGet(template: "GetAllProduct")]
+        [HttpGet("getAllProduct")]
         public async Task<IEnumerable<Product>> Get()
         {
             return await _context.Products.ToListAsync();
@@ -25,10 +25,16 @@ namespace API_OnlineShop_backend.Controllers
         [HttpGet("{id}")]
         public async Task<Product> Get(int id)
         {
-            Product prod = await _context.Products.FirstOrDefaultAsync(x => x.ProductId == id);
-            
-            if (prod == null) { return null; }
-            else { return prod; }
+            var prod = await _context.Products.FirstOrDefaultAsync(x => x.ProductId == id);
+
+            if (prod == null) 
+            { 
+                return null; 
+            }
+            else 
+            { 
+                return prod; 
+            }
         }
     }
 }
