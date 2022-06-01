@@ -31,9 +31,12 @@ namespace API_OnlineShop_backend.Controllers
 
         // PUT api/CartController/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        public void Put(int id, [FromBody] int quantity)
         {
-            Cart.Products.First(x=>x.ProductId == id).QuantityPerUnit = value;
+            if (Cart.Products.Any(x => x.ProductId == id))
+            { 
+            Cart.QuantityCartItem = quantity;
+            };
         }
 
         // DELETE api/CartController/5
