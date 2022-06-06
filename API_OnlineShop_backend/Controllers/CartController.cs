@@ -8,43 +8,37 @@ namespace API_OnlineShop_backend.Controllers
     [ApiController]
     public class CartController : ControllerBase
     {
+        Dictionary<int, Product>? Products = new Dictionary<int, Product>();
+
         // GET: api/<CartController>
         [HttpGet]
-        public List<Product>? Get()
+        public async Task<IActionResult> Get()
         {
-            return Cart.Products;
+            return Ok(Cart.Products);
         }
 
         // GET api/CartController/5
         [HttpGet("{id}")]
-        public IEnumerable<Product>? Get(int id)
+        public async Task<IActionResult> GetById(int id)
         {
-            return Cart.Products.Where(x=>x.ProductId == id);
+            var cart_item = Cart.Products;
+            if (!cart_item.Any(x => x.Key == id))
+            {
+                return NotFound();
+            }
+            return Ok(cart_item.FirstOrDefault(x => x.Key == id));
         }
 
         // POST api/CartController
         [HttpPost]
-        public void Post(Product product)
+        public async Task<IActionResult> Post(Product product)
         {
-            Cart.Products.Add(product);
-        }
+            if (product == null)
+            {
+                return BadRequest();
+            }
 
-        // PUT api/CartController/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] int quantity)
-        {
-            if (Cart.Products.Any(x => x.ProductId == id))
-            { 
-            Cart.QuantityCartItem = quantity;
-            };
-        }
-
-        // DELETE api/CartController/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
-            var del_item = Cart.Products.Where(x=>x.ProductId == id).FirstOrDefault();
-            Cart.Products.Remove(del_item);
+            return CreatedAtAction(nameof(GetById), new { id = product.ProductId}, product);
         }
     }
 }
