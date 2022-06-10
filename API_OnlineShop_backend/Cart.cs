@@ -2,10 +2,10 @@
 
 namespace API_OnlineShop_backend
 {
-    public class Cart
+    public static class Cart
     {
         public static int CartItemId { get; set; }
 
-        public static Dictionary<int, Product>? Products { get; set; }
+        public static Dictionary<Product, int> Products { get; set; }
     }
 }

@@ -8,8 +8,6 @@ namespace API_OnlineShop_backend.Controllers
     [ApiController]
     public class CartController : ControllerBase
     {
-        Dictionary<int, Product>? Products = new Dictionary<int, Product>();
-
         // GET: api/<CartController>
         [HttpGet]
         public async Task<IActionResult> Get()
@@ -19,26 +17,70 @@ namespace API_OnlineShop_backend.Controllers
 
         // GET api/CartController/5
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(int id)
+        public async Task<IActionResult> Get(int id)
         {
             var cart_item = Cart.Products;
-            if (!cart_item.Any(x => x.Key == id))
+            if (!cart_item.Any(x => x.Key.ProductId == id))
             {
                 return NotFound();
             }
-            return Ok(cart_item.FirstOrDefault(x => x.Key == id));
+            return Ok(cart_item.FirstOrDefault(x => x.Key.ProductId == id));
         }
 
         // POST api/CartController
-        [HttpPost]
-        public async Task<IActionResult> Post(Product product)
+        [HttpPost("{id}")]
+        public async Task<IActionResult> Post(int id)
         {
-            if (product == null)
+            var cart_item = Cart.Products.FirstOrDefault(x => x.Key.ProductId == id);
+
+            if (cart_item.Key != null)
+            {
+                Cart.Products.Add(cart_item.Key, cart_item.Value);
+                return Ok("Товар добавлен в корзину");
+            }
+
+            if (id == null)
             {
                 return BadRequest();
             }
 
-            return CreatedAtAction(nameof(GetById), new { id = product.ProductId}, product);
+            return CreatedAtAction(nameof(Get), new { id = cart_item }, Cart.Products);
+        }
+
+        // PUT api/CartController/5/2
+        [HttpPut("{id}/{quantity}")]
+        public async Task<IActionResult> Put(int id, int quantity)
+        {
+            var change_item = Cart.Products.FirstOrDefault(x => x.Key.ProductId == id).Key;
+
+            if (change_item != null)
+            {
+                Cart.Products[change_item] = quantity;
+            }
+
+            return Ok();
+        }
+
+        // DELETE api/CartController/5
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var del_item = Cart.Products.FirstOrDefault(x => x.Key.ProductId == id);
+
+            if (del_item.Key != null)
+            {
+                Cart.Products.Remove(del_item.Key);
+            }
+            return Ok(Cart.Products);
+        }
+
+        // DELETE api/CartController/
+        [HttpDelete]
+        public async Task<IActionResult> Clear()
+        {
+            Cart.Products.Clear();
+
+            return Ok(Cart.Products);
         }
     }
 }
