@@ -8,6 +8,14 @@ namespace API_OnlineShop_backend.Controllers
     [ApiController]
     public class CartController : ControllerBase
     {
+
+        private readonly NorthwindContext _context;
+
+        public CartController(NorthwindContext context)
+        {
+            _context = context;
+        }
+
         // GET: api/<CartController>
         [HttpGet]
         public async Task<IActionResult> Get()
@@ -19,21 +27,22 @@ namespace API_OnlineShop_backend.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(int id)
         {
-            var cart_item = Cart.Products;
-            if (!cart_item.Any(x => x.Key.ProductId == id))
+            var cart_item = Cart.Products.FirstOrDefault(x => x.Key.ProductId == id);
+            if (cart_item.Key != null)
             {
                 return NotFound();
             }
-            return Ok(cart_item.FirstOrDefault(x => x.Key.ProductId == id));
+            return Ok(cart_item);
         }
 
         // POST api/CartController
         [HttpPost("{id}")]
         public async Task<IActionResult> Post(int id)
         {
+            var product_item = _context.Products.FirstOrDefault(x => x.ProductId == id);
             var cart_item = Cart.Products.FirstOrDefault(x => x.Key.ProductId == id);
 
-            if (cart_item.Key != null)
+            if (cart_item.Key.ProductId != product_item.ProductId)
             {
                 Cart.Products.Add(cart_item.Key, cart_item.Value);
                 return Ok("Товар добавлен в корзину");
@@ -44,7 +53,7 @@ namespace API_OnlineShop_backend.Controllers
                 return BadRequest();
             }
 
-            return CreatedAtAction(nameof(Get), new { id = cart_item }, Cart.Products);
+            return Accepted();
         }
 
         // PUT api/CartController/5/2
@@ -71,7 +80,7 @@ namespace API_OnlineShop_backend.Controllers
             {
                 Cart.Products.Remove(del_item.Key);
             }
-            return Ok(Cart.Products);
+            return Ok();
         }
 
         // DELETE api/CartController/
@@ -80,7 +89,7 @@ namespace API_OnlineShop_backend.Controllers
         {
             Cart.Products.Clear();
 
-            return Ok(Cart.Products);
+            return Ok();
         }
     }
 }
