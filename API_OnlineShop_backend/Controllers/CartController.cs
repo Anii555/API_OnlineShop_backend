@@ -4,7 +4,7 @@
 
 namespace API_OnlineShop_backend.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     [ApiController]
     public class CartController : ControllerBase
     {
@@ -28,7 +28,7 @@ namespace API_OnlineShop_backend.Controllers
         public async Task<IActionResult> Get(int id)
         {
             var cart_item = Cart.Products.FirstOrDefault(x => x.Key.ProductId == id);
-            if (cart_item.Key != null)
+            if (cart_item.Key == null)
             {
                 return NotFound();
             }
@@ -39,19 +39,19 @@ namespace API_OnlineShop_backend.Controllers
         [HttpPost("{id}")]
         public async Task<IActionResult> Post(int id)
         {
-            var product_item = _context.Products.FirstOrDefault(x => x.ProductId == id);
-            var cart_item = Cart.Products.FirstOrDefault(x => x.Key.ProductId == id);
-
-            if (cart_item.Key.ProductId != product_item.ProductId)
-            {
-                Cart.Products.Add(cart_item.Key, cart_item.Value);
-                return Ok("Товар добавлен в корзину");
-            }
-
-            if (id == null)
+            if (id == 0)
             {
                 return BadRequest();
             }
+
+            var product_item = _context.Products.FirstOrDefault(x => x.ProductId == id);
+            var cart_item = Cart.Products.FirstOrDefault(x => x.Key.ProductId == id);
+
+                if (product_item.ProductId != cart_item.Key.ProductId || cart_item.Key == null)
+                {
+                    Cart.Products.Add(product_item, product_item.ProductId);
+                    return Ok("Товар добавлен в корзину");
+                }
 
             return Accepted();
         }
