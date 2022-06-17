@@ -1,11 +1,11 @@
-﻿namespace API_OnlineShop_backend
+﻿using Microsoft.AspNetCore.Mvc;
+
+namespace API_OnlineShop_backend
 {
     public static class Cart
     {
         public static int CartItemId { get; set; }
 
-        public static int QuantityCartItem { get; set; }
-
-        public static List<Product>? Products { get; set; }
+        public static Dictionary<Product, int> Products = new Dictionary<Product, int>();
     }
 }
