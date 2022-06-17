@@ -47,7 +47,7 @@ namespace API_OnlineShop_backend.Controllers
             var product_item = _context.Products.FirstOrDefault(x => x.ProductId == id);
             var cart_item = Cart.Products.FirstOrDefault(x => x.Key.ProductId == id);
 
-                if (product_item.ProductId != cart_item.Key.ProductId || cart_item.Key == null)
+                if (cart_item.Key == null || product_item.ProductId != cart_item.Key.ProductId)
                 {
                     Cart.Products.Add(product_item, product_item.ProductId);
                     return Ok("Товар добавлен в корзину");
