@@ -19,7 +19,7 @@ namespace API_OnlineShop_backend.Controllers
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            return Ok();
+            return Ok(Cart.Products.Select(x => new Cart.CartProductResponce(x.Key, x.Value)));
         }
 
         // GET api/CartController/5
