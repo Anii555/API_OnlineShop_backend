@@ -51,15 +51,13 @@ namespace API_OnlineShop_backend.Controllers
                 Cart.Products.Add(product_item, 1);
                 return Ok(new CartProductResponce(product_item, 1));
             }
-            else 
+            else
             {
                 int amount = cart_item.Value + 1;
 
                 Cart.Products[cart_item.Key] = amount;
                 return Ok(new CartProductResponce(cart_item.Key, amount));
             }
-
-            return Accepted();
         }
 
         // PUT api/CartController/5/2
