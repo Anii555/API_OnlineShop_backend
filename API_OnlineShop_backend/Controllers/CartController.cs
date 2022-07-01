@@ -19,7 +19,7 @@ namespace API_OnlineShop_backend.Controllers
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            return Ok(Cart.Products.Select(x => new Cart.CartProductResponce(x.Key, x.Value)));
+            return Ok(Cart.Products.Select(x => new CartProductResponce(x.Key, x.Value)));
         }
 
         // GET api/CartController/5
@@ -31,7 +31,7 @@ namespace API_OnlineShop_backend.Controllers
             {
                 return NotFound();
             }
-            return Ok(new Cart.CartProductResponce(cart_item.Key, cart_item.Value));
+            return Ok(new CartProductResponce(cart_item.Key, cart_item.Value));
         }
 
         // POST api/CartController
@@ -46,17 +46,17 @@ namespace API_OnlineShop_backend.Controllers
             var product_item = _context.Products.FirstOrDefault(x => x.ProductId == id);
             var cart_item = Cart.Products.FirstOrDefault(x => x.Key.ProductId == id);
 
-            if (cart_item.Key == null || product_item.ProductId != cart_item.Key.ProductId)
+            if (cart_item.Key == null || id != cart_item.Key.ProductId)
             {
                 Cart.Products.Add(product_item, 1);
-                return Ok(new Cart.CartProductResponce(product_item, 1));
+                return Ok(new CartProductResponce(product_item, 1));
             }
             else 
             {
                 int amount = cart_item.Value + 1;
 
                 Cart.Products[cart_item.Key] = amount;
-                return Ok(new Cart.CartProductResponce(cart_item.Key, amount));
+                return Ok(new CartProductResponce(cart_item.Key, amount));
             }
 
             return Accepted();
@@ -73,7 +73,7 @@ namespace API_OnlineShop_backend.Controllers
                 Cart.Products[change_item.Key] = amount;
             }
 
-            return Ok(new Cart.CartProductResponce(change_item.Key, amount));
+            return Ok(new CartProductResponce(change_item.Key, amount));
         }
 
         // DELETE api/CartController/5
@@ -86,7 +86,7 @@ namespace API_OnlineShop_backend.Controllers
             {
                 Cart.Products.Remove(del_item.Key);
             }
-            return Ok(Cart.Products.Select(x => new Cart.CartProductResponce(x.Key, x.Value)));
+            return Ok(Cart.Products.Select(x => new CartProductResponce(x.Key, x.Value)));
         }
 
         // DELETE api/CartController/
