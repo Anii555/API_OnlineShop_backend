@@ -1,6 +1,7 @@
 using API_OnlineShop_backend;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using ProductsLibrary;
 
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
