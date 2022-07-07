@@ -10,18 +10,23 @@ namespace API_OnlineShop_backend.Controllers
     [Route("[controller]")]
     public class ProductController : ControllerBase
     {
-        private readonly ProductRepository productRepository;
+        private readonly ProductRepository _productRepository;
+
+        public ProductController(ProductRepository productRepository)
+        {
+            _productRepository = productRepository;
+        }
 
         [HttpGet("getAllProducts")]  
         public async Task<IEnumerable<Product>> Get()
         {
-            return await productRepository.GetAll();
+            return await _productRepository.GetAll();
         }
 
         [HttpGet("{id}")]
         public async Task<Product> Get(int id)
         {
-            return await productRepository.GetId(id);
+            return await _productRepository.GetId(id);
         }
     }
 }

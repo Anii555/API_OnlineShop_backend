@@ -1,4 +1,5 @@
 using API_OnlineShop_backend;
+using API_OnlineShop_backend.Controllers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using ProductsLibrary;
@@ -18,6 +19,10 @@ builder.Services.AddCors(options =>
 
 // Add services to the container.
 builder.Services.AddControllers();
+
+//подключение контекста из библиотеки
+builder.Services.AddScoped<ProductRepository, ProductRepository>();
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
