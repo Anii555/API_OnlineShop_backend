@@ -9,12 +9,12 @@ namespace API_OnlineShop_backend.Controllers
     [ApiController]
     public class CartController : ControllerBase
     {
-        //private readonly NorthwindContext _context;
+        private readonly NorthwindContext _context;
 
-        //public CartController(NorthwindContext context)
-        //{
-        //    _context = context;
-        //}
+        public CartController(NorthwindContext context)
+        {
+            _context = context;
+        }
 
         // GET: api/<CartController>
         [HttpGet]
