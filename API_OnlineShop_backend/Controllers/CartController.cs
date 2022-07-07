@@ -9,11 +9,11 @@ namespace API_OnlineShop_backend.Controllers
     [ApiController]
     public class CartController : ControllerBase
     {
-        private readonly NorthwindContext _context;
+        private readonly ProductRepository _productRepository;
 
-        public CartController(NorthwindContext context)
+        public CartController(ProductRepository productRepository)
         {
-            _context = context;
+            _productRepository = productRepository;
         }
 
         // GET: api/<CartController>
@@ -44,7 +44,7 @@ namespace API_OnlineShop_backend.Controllers
                 return BadRequest();
             }
 
-            var product_item = _context.Products.FirstOrDefault(x => x.ProductId == id);
+            var product_item = _productRepository.GetAll().Result.FirstOrDefault(x => x.ProductId == id);
             var cart_item = Cart.Products.FirstOrDefault(x => x.Key.ProductId == id);
 
             if (cart_item.Key == null || id != cart_item.Key.ProductId)
