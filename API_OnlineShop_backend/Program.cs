@@ -36,15 +36,13 @@ builder.Services.AddDbContextPool<NorthwindContext>(options =>
 });
 
 builder.Services.AddIdentity<IdentityUser, IdentityRole>()
-                .AddEntityFrameworkStores<NorthwindContext>();
+                .AddEntityFrameworkStores<NorthwindContext>()
+                .AddSignInManager<SignInManager<IdentityUser>>();
 
 builder.Services.AddControllersWithViews();
 //builder.Services.AddIdentityCore<NorthwindContext>();
-//var identityBuilder = new IdentityBuilder(builder.UserType, builder.Services);
-//identityBuilder.AddEntityFrameworkStores<NorthwindContext>();
-//identityBuilder.AddSignInManager<SignInManager<AppUser>>(); 
 
-var app = builder.Build(); 
+var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
