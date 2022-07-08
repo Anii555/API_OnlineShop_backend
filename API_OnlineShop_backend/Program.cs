@@ -1,5 +1,6 @@
 using API_OnlineShop_backend;
 using API_OnlineShop_backend.Controllers;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using ProductsLibrary;
@@ -34,7 +35,16 @@ builder.Services.AddDbContextPool<NorthwindContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("NorthwindDatabase"));
 });
 
-var app = builder.Build();
+builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+                .AddEntityFrameworkStores<NorthwindContext>();
+
+builder.Services.AddControllersWithViews();
+//builder.Services.AddIdentityCore<NorthwindContext>();
+//var identityBuilder = new IdentityBuilder(builder.UserType, builder.Services);
+//identityBuilder.AddEntityFrameworkStores<NorthwindContext>();
+//identityBuilder.AddSignInManager<SignInManager<AppUser>>(); 
+
+var app = builder.Build(); 
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -45,6 +55,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseCors(MyAllowSpecificOrigins);
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
