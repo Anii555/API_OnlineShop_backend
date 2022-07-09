@@ -22,16 +22,10 @@ namespace API_OnlineShop_backend.Controllers
         public IActionResult Register()
         {
             //return View(); 
-<<<<<<< HEAD
             return Ok("Ну типа какой-то вывод");
         }
 
         [HttpPost("register/{model}")]
-=======
-              return Ok("Ну типа какой-то вывод");
-        }
-        [HttpPost]
->>>>>>> DEMO-41
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
             if (ModelState.IsValid)
@@ -55,7 +49,6 @@ namespace API_OnlineShop_backend.Controllers
             }
             return Ok(model);
         }
-<<<<<<< HEAD
 
         [HttpGet("{returnUrl}")]
         public IActionResult Login(string returnUrl = null)
@@ -99,7 +92,5 @@ namespace API_OnlineShop_backend.Controllers
             await _signInManager.SignOutAsync();
             return RedirectToAction("Index", "Home");
         }
-=======
->>>>>>> DEMO-41
     }
 }
