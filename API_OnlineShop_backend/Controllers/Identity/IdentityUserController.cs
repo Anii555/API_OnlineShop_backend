@@ -14,19 +14,94 @@ namespace API_OnlineShop_backend.Controllers.Identity
     [Route("[controller]")]
     public class IdentityUserController : ControllerBase
     {
-        private readonly NorthwindContext _context;
-
-        public IdentityUserController(NorthwindContext context)
+        RoleManager<IdentityRole> _roleManager;
+        UserManager<IdentityUser> _userManager;
+        public IdentityUserController(RoleManager<IdentityRole> roleManager, UserManager<IdentityUser> userManager)
         {
-            _context = context;
+            _roleManager = roleManager;
+            _userManager = userManager;
         }
 
         [HttpGet]
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            var users = _context.Users.ToListAsync();
+            var users = await _userManager.Users.ToListAsync();
 
             return Ok(users);
+        }
+        /////
+
+        [HttpPost("create/{model}")]
+        public async Task<IActionResult> Create([FromBody] IdentityUser model)
+        {
+            if (ModelState.IsValid)
+            {
+                IdentityUser user = new IdentityUser { Email = model.Email, UserName = model.Email };
+                //var result = await _userManager.CreateAsync(user, model.Password);
+                //if (result.Succeeded)
+                //{
+                //    return RedirectToAction("Index");
+                //}
+                //else
+                //{
+                //    foreach (var error in result.Errors)
+                //    {
+                //        ModelState.AddModelError(string.Empty, error.Description);
+                //    }
+                //}
+            }
+            return Ok(model);
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Edit(string id)
+        {
+            IdentityUser user = await _userManager.FindByIdAsync(id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+            IdentityUser model = new IdentityUser { Id = user.Id, Email = user.Email };
+            return Ok(model);
+        }
+
+        [HttpPut("{model}")]
+        public async Task<IActionResult> Edit([FromBody] IdentityUser model)
+        {
+            if (ModelState.IsValid)
+            {
+                IdentityUser user = await _userManager.FindByIdAsync(model.Id);
+                if (user != null)
+                {
+                    user.Email = model.Email;
+                    user.UserName = model.Email;
+
+                    var result = await _userManager.UpdateAsync(user);
+                    if (result.Succeeded)
+                    {
+                        return RedirectToAction("Index");
+                    }
+                    else
+                    {
+                        foreach (var error in result.Errors)
+                        {
+                            ModelState.AddModelError(string.Empty, error.Description);
+                        }
+                    }
+                }
+            }
+            return Ok(model);
+        }
+
+        [HttpPost("{id}")]
+        public async Task<ActionResult> Delete(string id)
+        {
+            IdentityUser user = await _userManager.FindByIdAsync(id);
+            if (user != null)
+            {
+                IdentityResult result = await _userManager.DeleteAsync(user);
+            }
+            return RedirectToAction("Index");
         }
     }
 }

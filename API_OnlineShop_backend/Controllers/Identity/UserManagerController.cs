@@ -21,9 +21,9 @@ namespace API_OnlineShop_backend.Controllers.Identity
         }
 
         [HttpGet]
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return Ok(_userManager.Users.ToListAsync());
+            return Ok(await _userManager.Users.ToListAsync());
         }
     }
 }
