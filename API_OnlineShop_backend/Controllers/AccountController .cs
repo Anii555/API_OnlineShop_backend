@@ -26,7 +26,7 @@ namespace API_OnlineShop_backend.Controllers
         }
 
         [HttpPost("register/{model}")]
-        public async Task<IActionResult> Register(RegisterViewModel model)
+        public async Task<IActionResult> Register([FromBody] RegisterViewModel model)
         {
             if (ModelState.IsValid)
             {
@@ -58,7 +58,7 @@ namespace API_OnlineShop_backend.Controllers
 
         [HttpPost("login/{model}")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login(LoginViewModel model)
+        public async Task<IActionResult> Login([FromBody] LoginViewModel model)
         {
             if (ModelState.IsValid)
             {

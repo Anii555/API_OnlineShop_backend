@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using ProductsLibrary;
 using System;
 using System.Collections.Generic;
@@ -23,7 +24,7 @@ namespace API_OnlineShop_backend.Controllers.Identity
         [HttpGet]
         public IActionResult Index()
         {
-            var users = _context.Users.ToList();
+            var users = _context.Users.ToListAsync();
 
             return Ok(users);
         }

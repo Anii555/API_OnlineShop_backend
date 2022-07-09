@@ -8,6 +8,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="ProductsLibrary\**" />
+    <Content Remove="ProductsLibrary\**" />
+    <EmbeddedResource Remove="ProductsLibrary\**" />
+    <None Remove="ProductsLibrary\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="6.0.6" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.6" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Abstractions" Version="2.2.0" />
@@ -23,6 +30,11 @@
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.6" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
     <PackageReference Include="VueCliMiddleware" Version="6.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ProductsLibrary\ProductsLibrary\ProductsLibrary.csproj" />
+    <ProjectReference Include="ProductsLibrary\ProductsLibrary\ProductsLibrary.csproj" />
   </ItemGroup>
 
 </Project>

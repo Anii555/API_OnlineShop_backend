@@ -17,7 +17,7 @@ namespace API_OnlineShop_backend.Controllers
             _productRepository = productRepository;
         }
 
-        [HttpGet("getAllProducts")]  
+        [HttpGet("getAllProducts")]
         public async Task<IEnumerable<Product>> Get()
         {
             return await _productRepository.GetAll();
