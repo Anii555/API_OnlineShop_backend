@@ -22,9 +22,16 @@ namespace API_OnlineShop_backend.Controllers
         public IActionResult Register()
         {
             //return View(); 
+<<<<<<< HEAD
+            return Ok("Ну типа какой-то вывод");
+        }
+
+        [HttpPost("register/{model}")]
+=======
               return Ok("Ну типа какой-то вывод");
         }
         [HttpPost]
+>>>>>>> DEMO-41
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
             if (ModelState.IsValid)
@@ -48,5 +55,51 @@ namespace API_OnlineShop_backend.Controllers
             }
             return Ok(model);
         }
+<<<<<<< HEAD
+
+        [HttpGet("{returnUrl}")]
+        public IActionResult Login(string returnUrl = null)
+        {
+            return Ok(new LoginViewModel { ReturnUrl = returnUrl });
+        }
+
+        [HttpPost("login/{model}")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Login(LoginViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var result =
+                    await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, false);
+                if (result.Succeeded)
+                {
+                    // проверяем, принадлежит ли URL приложению
+                    if (!string.IsNullOrEmpty(model.ReturnUrl) && Url.IsLocalUrl(model.ReturnUrl))
+                    {
+                        return Redirect(model.ReturnUrl);
+                    }
+                    else
+                    {
+                        return RedirectToAction("Index", "Home");
+                    }
+                }
+                else
+                {
+                    ModelState.AddModelError("", "Неправильный логин и (или) пароль");
+                }
+            }
+            return Ok(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Logout()
+        {
+            // удаляем аутентификационные куки
+            await _signInManager.SignOutAsync();
+            return RedirectToAction("Index", "Home");
+        }
+=======
+>>>>>>> DEMO-41
     }
 }
