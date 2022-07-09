@@ -32,25 +32,25 @@ namespace API_OnlineShop_backend.Controllers.Identity
         /////
 
         [HttpPost("create/{model}")]
-        public async Task<IActionResult> Create([FromBody] IdentityUser model)
+        public async Task<IActionResult> Create(string email, string userName, string pass)
         {
             if (ModelState.IsValid)
             {
-                IdentityUser user = new IdentityUser { Email = model.Email, UserName = model.Email };
-                //var result = await _userManager.CreateAsync(user, model.Password);
-                //if (result.Succeeded)
-                //{
-                //    return RedirectToAction("Index");
-                //}
-                //else
-                //{
-                //    foreach (var error in result.Errors)
-                //    {
-                //        ModelState.AddModelError(string.Empty, error.Description);
-                //    }
-                //}
+                IdentityUser user = new IdentityUser { Email = email, UserName = userName };
+                var result = await _userManager.CreateAsync(user, pass);
+                if (result.Succeeded)
+                {
+                    return RedirectToAction("Index");
+                }
+                else
+                {
+                    foreach (var error in result.Errors)
+                    {
+                        ModelState.AddModelError(string.Empty, error.Description);
+                    }
+                }
             }
-            return Ok(model);
+            return Ok();
         }
 
         [HttpPut("{id}")]
