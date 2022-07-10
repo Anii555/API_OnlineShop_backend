@@ -39,7 +39,6 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>()
                 .AddEntityFrameworkStores<NorthwindContext>()
                 .AddSignInManager<SignInManager<IdentityUser>>();
 
-builder.Services.AddControllersWithViews();
 //builder.Services.AddIdentityCore<NorthwindContext>();
 
 var app = builder.Build();

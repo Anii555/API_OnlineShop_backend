@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ProductsLibrary;
+using ProductsLibrary.DB_Context;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,77 +32,46 @@ namespace API_OnlineShop_backend.Controllers.Identity
         }
         /////
 
-        [HttpPost("create/{model}")]
-        public async Task<IActionResult> Create(string email, string userName, string pass)
+        [HttpPost("create")]
+        public async Task<IActionResult> Create(string email, string userName, string password)
         {
-            if (ModelState.IsValid)
+            User user = new User { Email = email, UserName = userName };
+            var result = await _userManager.CreateAsync(user, password);
+            if (result.Succeeded)
             {
-                IdentityUser user = new IdentityUser { Email = email, UserName = userName };
-                var result = await _userManager.CreateAsync(user, pass);
+                return Ok("Index");
+            }
+            return Ok(result);
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> ChangeEmailOrUsername([FromBody] IdentityUser model)
+        {
+            IdentityUser user = await _userManager.FindByIdAsync(model.Id);
+            if (user != null)
+            {
+                user.Email = model.Email;
+                user.UserName = model.Email;
+
+                var result = await _userManager.UpdateAsync(user);
                 if (result.Succeeded)
                 {
-                    return RedirectToAction("Index");
-                }
-                else
-                {
-                    foreach (var error in result.Errors)
-                    {
-                        ModelState.AddModelError(string.Empty, error.Description);
-                    }
-                }
-            }
-            return Ok();
-        }
-
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Edit(string id)
-        {
-            IdentityUser user = await _userManager.FindByIdAsync(id);
-            if (user == null)
-            {
-                return NotFound();
-            }
-            IdentityUser model = new IdentityUser { Id = user.Id, Email = user.Email };
-            return Ok(model);
-        }
-
-        [HttpPut("{model}")]
-        public async Task<IActionResult> Edit([FromBody] IdentityUser model)
-        {
-            if (ModelState.IsValid)
-            {
-                IdentityUser user = await _userManager.FindByIdAsync(model.Id);
-                if (user != null)
-                {
-                    user.Email = model.Email;
-                    user.UserName = model.Email;
-
-                    var result = await _userManager.UpdateAsync(user);
-                    if (result.Succeeded)
-                    {
-                        return RedirectToAction("Index");
-                    }
-                    else
-                    {
-                        foreach (var error in result.Errors)
-                        {
-                            ModelState.AddModelError(string.Empty, error.Description);
-                        }
-                    }
+                    return Ok(result);
                 }
             }
             return Ok(model);
         }
 
-        [HttpPost("{id}")]
+        [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(string id)
         {
+            IdentityResult result = new IdentityResult();
             IdentityUser user = await _userManager.FindByIdAsync(id);
             if (user != null)
             {
-                IdentityResult result = await _userManager.DeleteAsync(user);
+                 result = await _userManager.DeleteAsync(user);
             }
-            return RedirectToAction("Index");
+            return Accepted(result);
         }
     }
 }

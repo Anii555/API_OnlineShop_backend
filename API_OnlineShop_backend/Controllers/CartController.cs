@@ -44,7 +44,7 @@ namespace API_OnlineShop_backend.Controllers
                 return BadRequest();
             }
 
-            var product_item = _productRepository.GetAll().Result.FirstOrDefault(x => x.ProductId == id);
+            var product_item = _productRepository.GetId(id).Result;
             var cart_item = Cart.Products.FirstOrDefault(x => x.Key.ProductId == id);
 
             if (cart_item.Key == null || id != cart_item.Key.ProductId)

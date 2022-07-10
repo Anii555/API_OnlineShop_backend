@@ -32,6 +32,7 @@ namespace ProductsLibrary
                 foreach (var user in users)
                 {
                     await userManager.CreateAsync(user, "qazwsX123@");
+                    context.Add(users);
                 }
             }
         }

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-
-namespace ProductsLibrary
+﻿namespace ProductsLibrary
 {
     public partial class OrderDetail
     {

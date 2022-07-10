@@ -12,7 +12,7 @@ using ProductsLibrary;
 namespace ProductsLibrary.Migrations
 {
     [DbContext(typeof(NorthwindContext))]
-    [Migration("20220708154930_MyMigration")]
+    [Migration("20220710114307_MyMigration")]
     partial class MyMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
+using ProductsLibrary.DB_Context;
 
 namespace API_OnlineShop_backend.Controllers
 {
@@ -20,65 +21,37 @@ namespace API_OnlineShop_backend.Controllers
         [HttpGet]
         public IActionResult Register()
         {
-            //return View(); 
-            return Ok("Ну типа какой-то вывод");
+            return Ok("Регистрация прошла успешно(?)");
         }
 
-        [HttpPost("register/{model}")]
-        public async Task<IActionResult> Register([FromBody] IdentityUser model)
+        [HttpPost("register")]
+        public async Task<IActionResult> Register([FromBody] User model)
         {
-            if (ModelState.IsValid)
+            User user = new User { Email = model.Email, UserName = model.Email };
+            //добавляем пользователя
+            var result = await _userManager.CreateAsync(user, model.Password);
+            if (result.Succeeded)
             {
-                IdentityUser user = new IdentityUser { Email = model.Email, UserName = model.Email };
-                // добавляем пользователя
-                //var result = await _userManager.CreateAsync(user, Input.Password);
-                //if (result.Succeeded)
-                //{
-                //    // установка куки
-                //    await _signInManager.SignInAsync(user, false);
-                //    return RedirectToAction("Index", "Home");
-                //}
-                //else
-                //{
-                //    foreach (var error in result.Errors)
-                //    {
-                //        ModelState.AddModelError(string.Empty, error.Description);
-                //    }
-                //}
+                // установка куки
+                await _signInManager.SignInAsync(user, false);
+                return Ok(result);
             }
             return Ok(model);
         }
 
-        //[HttpGet("{returnUrl}")]
-        //public IActionResult Login(string returnUrl = null)
-        //{
-        //    return Ok(new IdentityUser { ReturnUrl = returnUrl });
-        //}
-
-        [HttpPost("login/{model}")]
+        [HttpPost("login")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login([FromBody] IdentityUser model)
+        public async Task<IActionResult> Login([FromBody] User model)
         {
-            if (ModelState.IsValid)
+            var result =
+                await _signInManager.CheckPasswordSignInAsync(model, model.Password, false);
+            if (result.Succeeded)
             {
-                //var result =
-                //    await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, false);
-                //if (result.Succeeded)
-                //{
-                //    // проверяем, принадлежит ли URL приложению
-                //    if (!string.IsNullOrEmpty(model.ReturnUrl) && Url.IsLocalUrl(model.ReturnUrl))
-                //    {
-                //        return Redirect(model.ReturnUrl);
-                //    }
-                //    else
-                //    {
-                //        return RedirectToAction("Index", "Home");
-                //    }
-                //}
-                //else
-                //{
-                //    ModelState.AddModelError("", "Неправильный логин и (или) пароль");
-                //}
+                return Ok(result);
+            }
+            else
+            {
+                BadRequest("Неправильный логин и (или) пароль");
             }
             return Ok(model);
         }
@@ -89,7 +62,7 @@ namespace API_OnlineShop_backend.Controllers
         {
             // удаляем аутентификационные куки
             await _signInManager.SignOutAsync();
-            return RedirectToAction("Index", "Home");
+            return Accepted();
         }
     }
 }
