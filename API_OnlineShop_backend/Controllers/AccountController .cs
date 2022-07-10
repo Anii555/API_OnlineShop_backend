@@ -18,12 +18,6 @@ namespace API_OnlineShop_backend.Controllers
             _signInManager = signInManager;
         }
 
-        [HttpGet]
-        public IActionResult Register()
-        {
-            return Ok("Регистрация прошла успешно(?)");
-        }
-
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] User model)
         {
@@ -36,7 +30,7 @@ namespace API_OnlineShop_backend.Controllers
                 await _signInManager.SignInAsync(user, false);
                 return Ok(result);
             }
-            return Ok(model);
+            return BadRequest(model);
         }
 
         [HttpPost("login")]
@@ -56,7 +50,7 @@ namespace API_OnlineShop_backend.Controllers
             return Ok(model);
         }
 
-        [HttpPost]
+        [HttpPost("logout")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout()
         {

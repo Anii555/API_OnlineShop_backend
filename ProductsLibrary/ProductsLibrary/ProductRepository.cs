@@ -21,16 +21,9 @@ namespace ProductsLibrary
 
         public async Task<Product> GetId(int id)
         {
-            var products = await _context.Products.FirstOrDefaultAsync(x => x.ProductId == id);
+            var product = await _context.Products.FirstOrDefaultAsync(x => x.ProductId == id);
 
-            if (products == null)
-            {
-                return null;
-            }
-            else
-            {
-                return products;
-            }
+            return product;
         }
     }
 }
