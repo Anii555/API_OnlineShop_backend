@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using ProductsLibrary;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -8,11 +9,11 @@ namespace API_OnlineShop_backend.Controllers
     [ApiController]
     public class CartController : ControllerBase
     {
-        private readonly NorthwindContext _context;
+        private readonly ProductRepository _productRepository;
 
-        public CartController(NorthwindContext context)
+        public CartController(ProductRepository productRepository)
         {
-            _context = context;
+            _productRepository = productRepository;
         }
 
         // GET: api/<CartController>
@@ -27,10 +28,12 @@ namespace API_OnlineShop_backend.Controllers
         public async Task<IActionResult> Get(int id)
         {
             var cart_item = Cart.Products.FirstOrDefault(x => x.Key.ProductId == id);
+
             if (cart_item.Key == null)
             {
                 return NotFound();
             }
+
             return Ok(new CartProductResponce(cart_item.Key, cart_item.Value));
         }
 
@@ -43,19 +46,20 @@ namespace API_OnlineShop_backend.Controllers
                 return BadRequest();
             }
 
-            var product_item = _context.Products.FirstOrDefault(x => x.ProductId == id);
+            var product_item = await _productRepository.GetId(id);
             var cart_item = Cart.Products.FirstOrDefault(x => x.Key.ProductId == id);
 
             if (cart_item.Key == null || id != cart_item.Key.ProductId)
             {
                 Cart.Products.Add(product_item, 1);
+
                 return Ok(new CartProductResponce(product_item, 1));
             }
             else
             {
                 int amount = cart_item.Value + 1;
-
                 Cart.Products[cart_item.Key] = amount;
+
                 return Ok(new CartProductResponce(cart_item.Key, amount));
             }
         }
@@ -84,6 +88,7 @@ namespace API_OnlineShop_backend.Controllers
             {
                 Cart.Products.Remove(del_item.Key);
             }
+
             return Ok(Cart.Products.Select(x => new CartProductResponce(x.Key, x.Value)));
         }
 

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using ProductsLibrary;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -9,32 +10,23 @@ namespace API_OnlineShop_backend.Controllers
     [Route("[controller]")]
     public class ProductController : ControllerBase
     {
-        private readonly NorthwindContext _context;
+        private readonly ProductRepository _productRepository;
 
-        public ProductController(NorthwindContext context)
+        public ProductController(ProductRepository productRepository)
         {
-            _context = context;
+            _productRepository = productRepository;
         }
 
         [HttpGet("getAllProducts")]
         public async Task<IEnumerable<Product>> Get()
         {
-            return await _context.Products.ToListAsync();
+            return await _productRepository.GetAll();
         }
 
         [HttpGet("{id}")]
         public async Task<Product> Get(int id)
         {
-            var prod = await _context.Products.FirstOrDefaultAsync(x => x.ProductId == id);
-
-            if (prod == null) 
-            { 
-                return null; 
-            }
-            else 
-            { 
-                return prod; 
-            }
+            return await _productRepository.GetId(id);
         }
     }
 }
