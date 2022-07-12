@@ -28,10 +28,12 @@ namespace API_OnlineShop_backend.Controllers
         public async Task<IActionResult> Get(int id)
         {
             var cart_item = Cart.Products.FirstOrDefault(x => x.Key.ProductId == id);
+
             if (cart_item.Key == null)
             {
                 return NotFound();
             }
+
             return Ok(new CartProductResponce(cart_item.Key, cart_item.Value));
         }
 
@@ -50,13 +52,14 @@ namespace API_OnlineShop_backend.Controllers
             if (cart_item.Key == null || id != cart_item.Key.ProductId)
             {
                 Cart.Products.Add(product_item, 1);
+
                 return Ok(new CartProductResponce(product_item, 1));
             }
             else
             {
                 int amount = cart_item.Value + 1;
-
                 Cart.Products[cart_item.Key] = amount;
+
                 return Ok(new CartProductResponce(cart_item.Key, amount));
             }
         }
@@ -85,6 +88,7 @@ namespace API_OnlineShop_backend.Controllers
             {
                 Cart.Products.Remove(del_item.Key);
             }
+
             return Ok(Cart.Products.Select(x => new CartProductResponce(x.Key, x.Value)));
         }
 

@@ -39,8 +39,6 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>()
                 .AddEntityFrameworkStores<NorthwindContext>()
                 .AddSignInManager<SignInManager<IdentityUser>>();
 
-//builder.Services.AddIdentityCore<NorthwindContext>();
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

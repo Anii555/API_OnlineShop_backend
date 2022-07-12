@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using ProductsLibrary;
+﻿using ProductsLibrary;
 
 namespace API_OnlineShop_backend
 {
