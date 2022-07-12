@@ -45,9 +45,8 @@ namespace API_OnlineShop_backend.Controllers
             }
             else
             {
-                BadRequest("Неправильный логин и (или) пароль");
+                return BadRequest("Неправильный логин и (или) пароль");
             }
-            return Ok(model);
         }
 
         [HttpPost("logout")]
