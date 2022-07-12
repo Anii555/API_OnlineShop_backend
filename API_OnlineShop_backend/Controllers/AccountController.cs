@@ -28,6 +28,7 @@ namespace API_OnlineShop_backend.Controllers
             {
                 // установка куки
                 await _signInManager.SignInAsync(user, false);
+
                 return Ok(result);
             }
             
