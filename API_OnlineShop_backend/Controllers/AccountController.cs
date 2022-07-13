@@ -20,7 +20,14 @@ namespace API_OnlineShop_backend.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] User model)
         {
-            var user = new User { Email = model.Email, UserName = model.Email };
+            var userExists = await _userManager.FindByNameAsync(model.UserName);
+            
+            if (userExists != null)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+
+            var user = new User { Email = model.Email, UserName = model.Email, Password = model.Password, SecurityStamp = Guid.NewGuid().ToString() };
             //добавляем пользователя
             var result = await _userManager.CreateAsync(user, model.Password);
             
