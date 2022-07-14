@@ -50,22 +50,22 @@ builder.Services.AddSwaggerGen(swagger =>
         In = ParameterLocation.Header,
         Description = "Enter ‘Bearer’ [space] and then your valid token in the text input below.\r\n\r\nExample: \"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9\"",
     });
-    swagger.AddSecurityRequirement(new OpenApiSecurityRequirement
-{
-{
-new OpenApiSecurityScheme
-{
-Reference = new OpenApiReference
-{
-Type = ReferenceType.SecurityScheme,
-Id = "Bearer"
-}
-},
-new string[] {}
 
-}
-});
-});
+    swagger.AddSecurityRequirement(new OpenApiSecurityRequirement()
+    {
+        {
+            new OpenApiSecurityScheme()
+                {
+                Reference = new OpenApiReference
+                {
+                Type = ReferenceType.SecurityScheme,
+                Id = "Bearer"
+                }
+            },
+            new string[] {}
+        }
+        });
+    });
 
 //Внедрение БД через строку подключения
 //Спросить подробнее про разницу между AddDbContext и AddDbContextPool (быстрее)
@@ -97,9 +97,6 @@ builder.Services.AddAuthentication(options =>
     {
         ValidateIssuer = true,
         ValidateAudience = true,
-        //ValidAudience = builder.Configuration["jwt: validaudience"],
-        //ValidIssuer = builder.Configuration["jwt: validissuer"],
-        //IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["TokenKey"]))
     };
 });
 
