@@ -65,7 +65,7 @@ builder.Services.AddSwaggerGen(swagger =>
             new string[] {}
         }
         });
-    });
+});
 
 //Внедрение БД через строку подключения
 //Спросить подробнее про разницу между AddDbContext и AddDbContextPool (быстрее)
@@ -86,10 +86,7 @@ builder.Services.AddAuthentication(options =>
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-})
-
-// Adding Jwt Bearer
-.AddJwtBearer(options =>
+}).AddJwtBearer(options => // Adding Jwt Bearer
 {
     options.SaveToken = true;
     options.RequireHttpsMetadata = false;
