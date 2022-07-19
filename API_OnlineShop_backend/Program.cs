@@ -25,6 +25,7 @@ builder.Services.AddCors(options =>
 
 // Add services to the container.
 builder.Services.AddControllers();
+builder.Services.AddMvcCore().AddRazorViewEngine();
 
 //подключение контекста из библиотеки
 builder.Services.AddScoped<ProductRepository>();
@@ -74,11 +75,28 @@ builder.Services.AddDbContextPool<NorthwindContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("NorthwindDatabase"));
 });
 
+
+//// For Identity
+//builder.Services.AddIdentity<User, IdentityRole>()
+//                .AddEntityFrameworkStores<NorthwindContext>()
+//                .AddSignInManager<SignInManager<User>>()
+//                .AddDefaultTokenProviders();
+
+
 // For Identity
-builder.Services.AddIdentity<User, IdentityRole>()
-                .AddEntityFrameworkStores<NorthwindContext>()
+builder.Services.AddIdentity<User, IdentityRole>(options =>
+        options.Password = new PasswordOptions
+        {
+            RequireDigit = true,
+            RequiredLength = 6,
+            RequireLowercase = true,
+            RequireUppercase = true,
+            //RequireNonLetterOrDigit = false,
+        })
+    .AddEntityFrameworkStores<NorthwindContext>()
                 .AddSignInManager<SignInManager<User>>()
                 .AddDefaultTokenProviders();
+;
 
 // Adding Authentication
 builder.Services.AddAuthentication(options =>

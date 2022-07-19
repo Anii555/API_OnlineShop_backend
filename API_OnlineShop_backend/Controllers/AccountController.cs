@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using ProductsLibrary.DB_Context;
+using ProductsLibrary.Models;
 
 namespace API_OnlineShop_backend.Controllers
 {
@@ -18,16 +19,16 @@ namespace API_OnlineShop_backend.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] User model)
+        public async Task<IActionResult> Register([FromBody] RegisterModel model)
         {
-            var userExists = await _userManager.FindByNameAsync(model.UserName);
+            var userExists = await _userManager.FindByNameAsync(model.Login);
 
             if (userExists != null)
             {
                 return BadRequest("Пользователь с таким именем уже существует");
             }
 
-            var user = new User { Email = model.Email, UserName = model.Email, Password = model.Password, SecurityStamp = Guid.NewGuid().ToString() };
+            var user = new User { UserName = model.Login, SecurityStamp = Guid.NewGuid().ToString()};
             //добавляем пользователя
             var result = await _userManager.CreateAsync(user, model.Password);
             
@@ -46,7 +47,7 @@ namespace API_OnlineShop_backend.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login([FromBody] User model)
         {
-            var result = await _signInManager.CheckPasswordSignInAsync(model, model.Password, false);
+            var result = await _signInManager.CheckPasswordSignInAsync(model, model.PasswordHash, false);
             
             if (result.Succeeded)
             {
