@@ -75,9 +75,9 @@ builder.Services.AddDbContextPool<NorthwindContext>(options =>
 });
 
 // For Identity
-builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+builder.Services.AddIdentity<User, IdentityRole>()
                 .AddEntityFrameworkStores<NorthwindContext>()
-                .AddSignInManager<SignInManager<IdentityUser>>()
+                .AddSignInManager<SignInManager<User>>()
                 .AddDefaultTokenProviders();
 
 // Adding Authentication
