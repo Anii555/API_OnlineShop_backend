@@ -2,6 +2,10 @@
 using Microsoft.AspNetCore.Identity;
 using ProductsLibrary.DB_Context;
 using ProductsLibrary.Models;
+using System.Security.Claims;
+using System.IdentityModel.Tokens.Jwt;
+using System.Text;
+using Microsoft.IdentityModel.Tokens;
 
 namespace API_OnlineShop_backend.Controllers
 {
@@ -11,27 +15,30 @@ namespace API_OnlineShop_backend.Controllers
     {
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
+        private readonly IConfiguration _configuration;
 
-        public AccountController(UserManager<User> userManager, SignInManager<User> signInManager)
+        public AccountController(UserManager<User> userManager, SignInManager<User> signInManager, IConfiguration configuration)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _configuration = configuration;
         }
 
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterModel model)
         {
             var userExists = await _userManager.FindByNameAsync(model.Login);
+            var user = new User { UserName = model.Login, SecurityStamp = Guid.NewGuid().ToString() };
+            var check_pass = await _signInManager.CheckPasswordSignInAsync(user, model.Password, false);
 
-            if (userExists != null)
+            if (userExists != null && check_pass.Succeeded)
             {
-                return BadRequest("Пользователь с таким именем уже существует");
+                return Conflict(await Login(new LoginModel { Login = model.Login, Password = model.Password })); //"Пользователь с таким именем уже существует"
             }
 
-            var user = new User { UserName = model.Login, SecurityStamp = Guid.NewGuid().ToString()};
             //добавляем пользователя
             var result = await _userManager.CreateAsync(user, model.Password);
-            
+
             if (result.Succeeded)
             {
                 // установка куки
@@ -39,24 +46,48 @@ namespace API_OnlineShop_backend.Controllers
 
                 return Ok(result);
             }
-            
-            return BadRequest(model);
+
+            return BadRequest(result.Errors);
         }
 
         [HttpPost("login")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login([FromBody] User model)
+        public async Task<IActionResult> Login([FromBody] LoginModel model)
         {
-            var result = await _signInManager.CheckPasswordSignInAsync(model, model.PasswordHash, false);
-            
-            if (result.Succeeded)
+            var user = await _userManager.FindByNameAsync(model.Login);
+
+            var result = await _signInManager.CheckPasswordSignInAsync(user, model.Password, false);
+
+            if (user != null && result.Succeeded)
             {
-                return Ok(result);
+                var userRoles = await _userManager.GetRolesAsync(user);
+
+                var authClaims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Name, user.UserName),
+                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                };
+
+                foreach (var userRole in userRoles)
+                {
+                    authClaims.Add(new Claim(ClaimTypes.Role, userRole));
+                }
+
+                //var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT: SecretKey"]));
+
+                var token = new JwtSecurityToken(
+                issuer: _configuration["JWT: ValidIssuer"],
+                audience: _configuration["JWT: ValidAudience"],
+                expires: DateTime.Now.AddHours(3),
+                claims: authClaims
+                );
+
+                return Ok(new
+                {
+                    token = new JwtSecurityTokenHandler().WriteToken(token),
+                    expiration = token.ValidTo
+                });
             }
-            else
-            {
-                return BadRequest("Неправильный логин и (или) пароль");
-            }
+            return Unauthorized();
         }
 
         [HttpPost("logout")]
@@ -65,7 +96,7 @@ namespace API_OnlineShop_backend.Controllers
         {
             // удаляем аутентификационные куки
             await _signInManager.SignOutAsync();
-            
+
             return Accepted();
         }
     }

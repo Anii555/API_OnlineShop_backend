@@ -12,8 +12,8 @@ using ProductsLibrary;
 namespace ProductsLibrary.Migrations
 {
     [DbContext(typeof(NorthwindContext))]
-    [Migration("20220719155106_NewMigration")]
-    partial class NewMigration
+    [Migration("20220720133601_NEWMigration")]
+    partial class NEWMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -439,10 +439,6 @@ namespace ProductsLibrary.Migrations
                     b.Property<string>("NormalizedUserName")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
-
-                    b.Property<string>("Password")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PasswordHash")
                         .HasColumnType("nvarchar(max)");

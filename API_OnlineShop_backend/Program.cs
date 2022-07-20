@@ -1,5 +1,3 @@
-using API_OnlineShop_backend;
-using API_OnlineShop_backend.Controllers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -25,7 +23,6 @@ builder.Services.AddCors(options =>
 
 // Add services to the container.
 builder.Services.AddControllers();
-builder.Services.AddMvcCore().AddRazorViewEngine();
 
 //подключение контекста из библиотеки
 builder.Services.AddScoped<ProductRepository>();
@@ -76,27 +73,22 @@ builder.Services.AddDbContextPool<NorthwindContext>(options =>
 });
 
 
-//// For Identity
-//builder.Services.AddIdentity<User, IdentityRole>()
-//                .AddEntityFrameworkStores<NorthwindContext>()
-//                .AddSignInManager<SignInManager<User>>()
-//                .AddDefaultTokenProviders();
-
-
 // For Identity
 builder.Services.AddIdentity<User, IdentityRole>(options =>
         options.Password = new PasswordOptions
         {
-            RequireDigit = true,
+            RequireDigit = false,
             RequiredLength = 6,
-            RequireLowercase = true,
-            RequireUppercase = true,
-            //RequireNonLetterOrDigit = false,
+            RequireLowercase = false,
+            RequireUppercase = false,
+            RequireNonAlphanumeric = false
         })
     .AddEntityFrameworkStores<NorthwindContext>()
                 .AddSignInManager<SignInManager<User>>()
                 .AddDefaultTokenProviders();
 ;
+
+builder.Services.AddMvcCore().AddRazorViewEngine();
 
 // Adding Authentication
 builder.Services.AddAuthentication(options =>
@@ -110,8 +102,8 @@ builder.Services.AddAuthentication(options =>
     options.RequireHttpsMetadata = false;
     options.TokenValidationParameters = new TokenValidationParameters()
     {
-        ValidateIssuer = true,
-        ValidateAudience = true,
+        ValidateIssuer = false,
+        ValidateAudience = false,
     };
 });
 

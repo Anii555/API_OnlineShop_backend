@@ -2,12 +2,12 @@
 
 namespace ProductsLibrary.Models
 {
-    public class RegisterModel
+    public class LoginModel
     {
-        [Required(ErrorMessage = "Придумайте логин")]
+        [Required(ErrorMessage = "Введите логин")]
         public string Login { get; set; }
 
-        [Required(ErrorMessage = "Придумайте пароль")]
+        [Required(ErrorMessage = "Введите пароль")]
         public string Password { get; set; }
     }
 }
