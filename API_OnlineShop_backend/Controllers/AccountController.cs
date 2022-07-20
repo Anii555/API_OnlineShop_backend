@@ -29,14 +29,24 @@ namespace API_OnlineShop_backend.Controllers
         {
             var userExists = await _userManager.FindByNameAsync(model.Login);
             var user = new User { UserName = model.Login, SecurityStamp = Guid.NewGuid().ToString() };
-            var check_pass = await _signInManager.CheckPasswordSignInAsync(user, model.Password, false);
 
-            if (userExists != null && check_pass.Succeeded)
+            if (userExists != null) //если пользователь существует
             {
-                return Conflict(await Login(new LoginModel { Login = model.Login, Password = model.Password })); //"Пользователь с таким именем уже существует"
-            }
+                var check_pass = await _signInManager.CheckPasswordSignInAsync(user, model.Password, false);
 
-            //добавляем пользователя
+                //проверяем пароль
+                if (check_pass.Succeeded)
+                {
+                    //авторизовываем
+                    return await Login(new RegisterModel { Login = model.Login, Password = model.Password });
+                }
+
+                //если пароль не совпадает, то
+                //просим ввести другой
+                return BadRequest("Аккаунт с таким логином уже существует.");
+            }
+            //если не существует, то
+            //добавляем нового пользователя
             var result = await _userManager.CreateAsync(user, model.Password);
 
             if (result.Succeeded)
@@ -51,39 +61,24 @@ namespace API_OnlineShop_backend.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] LoginModel model)
+        public async Task<IActionResult> Login([FromBody] RegisterModel model)
         {
-            var user = await _userManager.FindByNameAsync(model.Login);
+            var userExists = await _userManager.FindByNameAsync(model.Login);
+            var result = await _signInManager.CheckPasswordSignInAsync(userExists, model.Password, false);
 
-            var result = await _signInManager.CheckPasswordSignInAsync(user, model.Password, false);
-
-            if (user != null && result.Succeeded)
+            if (userExists != null && result.Succeeded)
             {
-                var userRoles = await _userManager.GetRolesAsync(user);
-
-                var authClaims = new List<Claim>
-                {
-                    new Claim(ClaimTypes.Name, user.UserName),
-                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                };
-
-                foreach (var userRole in userRoles)
-                {
-                    authClaims.Add(new Claim(ClaimTypes.Role, userRole));
-                }
-
-                //var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT: SecretKey"]));
-
                 var token = new JwtSecurityToken(
                 issuer: _configuration["JWT: ValidIssuer"],
                 audience: _configuration["JWT: ValidAudience"],
-                expires: DateTime.Now.AddHours(3),
-                claims: authClaims
+                expires: DateTime.Now.AddHours(3)
                 );
+
+                var stringToken = new JwtSecurityTokenHandler().WriteToken(token);
 
                 return Ok(new
                 {
-                    token = new JwtSecurityTokenHandler().WriteToken(token),
+                    stringToken,
                     expiration = token.ValidTo
                 });
             }

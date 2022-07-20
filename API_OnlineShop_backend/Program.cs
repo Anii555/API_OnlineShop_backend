@@ -54,15 +54,15 @@ builder.Services.AddSwaggerGen(swagger =>
         {
             new OpenApiSecurityScheme()
                 {
-                Reference = new OpenApiReference
-                {
-                Type = ReferenceType.SecurityScheme,
-                Id = "Bearer"
-                }
-            },
-            new string[] {}
+                    Reference = new OpenApiReference
+                    {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                    }
+                },
+                new string[] {}
         }
-        });
+    });
 });
 
 //Внедрение БД через строку подключения
@@ -81,7 +81,7 @@ builder.Services.AddIdentity<User, IdentityRole>(options =>
             RequiredLength = 6,
             RequireLowercase = false,
             RequireUppercase = false,
-            RequireNonAlphanumeric = false
+            RequireNonAlphanumeric = false,
         })
     .AddEntityFrameworkStores<NorthwindContext>()
                 .AddSignInManager<SignInManager<User>>()
