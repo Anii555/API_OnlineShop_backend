@@ -53,14 +53,14 @@ builder.Services.AddSwaggerGen(swagger =>
     {
         {
             new OpenApiSecurityScheme()
+            {
+                Reference = new OpenApiReference
                 {
-                    Reference = new OpenApiReference
-                    {
                     Type = ReferenceType.SecurityScheme,
                     Id = "Bearer"
-                    }
-                },
-                new string[] {}
+                }
+            },
+            new string[] {}
         }
     });
 });

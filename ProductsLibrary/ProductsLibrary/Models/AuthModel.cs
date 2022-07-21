@@ -2,7 +2,7 @@
 
 namespace ProductsLibrary.Models
 {
-    public class RegisterModel
+    public class AuthModel
     {
         [Required(ErrorMessage = "Придумайте логин")]
         public string Login { get; set; }

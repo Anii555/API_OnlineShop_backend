@@ -25,28 +25,18 @@ namespace API_OnlineShop_backend.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] RegisterModel model)
+        public async Task<IActionResult> Register([FromBody] AuthModel model)
         {
             var userExists = await _userManager.FindByNameAsync(model.Login);
-            var user = new User { UserName = model.Login, SecurityStamp = Guid.NewGuid().ToString() };
 
             if (userExists != null) //если пользователь существует
             {
-                var check_pass = await _signInManager.CheckPasswordSignInAsync(user, model.Password, false);
-
-                //проверяем пароль
-                if (check_pass.Succeeded)
-                {
-                    //авторизовываем
-                    return await Login(new RegisterModel { Login = model.Login, Password = model.Password });
-                }
-
-                //если пароль не совпадает, то
-                //просим ввести другой
-                return BadRequest("Аккаунт с таким логином уже существует.");
+                //проверяем пароль и, в случае успеха, авторизовываем
+                return await Auth(userExists, model);
             }
             //если не существует, то
             //добавляем нового пользователя
+            var user = new User { UserName = model.Login };
             var result = await _userManager.CreateAsync(user, model.Password);
 
             if (result.Succeeded)
@@ -61,16 +51,42 @@ namespace API_OnlineShop_backend.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] RegisterModel model)
+        public async Task<IActionResult> Login([FromBody] AuthModel model)
         {
             var userExists = await _userManager.FindByNameAsync(model.Login);
+
+            if (userExists != null) //если пользователь существует
+            {
+                //проверяем пароль и, в случае успеха, авторизовываем
+                return await Auth(userExists, model);
+            }
+
+            return Unauthorized();
+        }
+
+        public async Task<IActionResult> Auth([FromBody] User userExists, AuthModel model)
+        {
             var result = await _signInManager.CheckPasswordSignInAsync(userExists, model.Password, false);
 
-            if (userExists != null && result.Succeeded)
+            if (result.Succeeded) //если пароль совпадает
             {
+                var userRoles = await _userManager.GetRolesAsync(userExists);
+
+                var authClaims = new List<Claim>
+                    {
+                    new Claim(ClaimTypes.Name, userExists.UserName),
+                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                    };
+
+                foreach (var userRole in userRoles)
+                {
+                    authClaims.Add(new Claim(ClaimTypes.Role, userRole));
+                }
+
                 var token = new JwtSecurityToken(
                 issuer: _configuration["JWT: ValidIssuer"],
                 audience: _configuration["JWT: ValidAudience"],
+                claims: authClaims,
                 expires: DateTime.Now.AddHours(3)
                 );
 
@@ -82,7 +98,9 @@ namespace API_OnlineShop_backend.Controllers
                     expiration = token.ValidTo
                 });
             }
-            return Unauthorized();
+            //если пароль не совпадает, то
+            //просим ввести другой
+            return Conflict("Аккаунт с таким логином уже существует.");
         }
 
         [HttpPost("logout")]
