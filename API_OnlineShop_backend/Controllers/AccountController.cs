@@ -31,17 +31,17 @@ namespace API_OnlineShop_backend.Controllers
 
             if (userExists != null) //если пользователь существует
             {
-                var check_pass = await _signInManager.CheckPasswordSignInAsync(userExists, model.Password, false);
+                //проверяем пароль и, в случае успеха, возвращаем токен
+                var token = await Auth(userExists, model);
 
-                if (check_pass.Succeeded) //если пароль совпадает
+                if (token != null)
                 {
-                    //авторизуем
-                    return await Auth(userExists, model);
+                    return Ok(token);
                 }
 
                 //если пароль не совпадает, то
-                //просим ввести другой
-                return Conflict("Неверный логин или пароль. Повторите попытку.");
+                //просто даём понять, что регаться повторно не надо
+                return Conflict("Аккаунт с таким логином уже существует.");
             }
 
             //если не существует, то
@@ -67,44 +67,47 @@ namespace API_OnlineShop_backend.Controllers
 
             if (userExists != null) //если пользователь существует
             {
-                var check_pass = await _signInManager.CheckPasswordSignInAsync(userExists, model.Password, false);
+                //проверяем пароль и, в случае успеха, возвращаем токен
+                var token = await Auth(userExists, model);
 
-                if (check_pass.Succeeded) //если пароль совпадает
+                if (token != null)
                 {
-                    //проверяем пароль и, в случае успеха, авторизовываем
-                    return await Auth(userExists, model);
+                    return Ok(token);
                 }
 
                 //если пароль не совпадает, то
                 //просим ввести другой
-                return Conflict("Неверный логин или пароль. Повторите попытку.");
+                return BadRequest("Неверный логин или пароль. Повторите попытку.");
             }
 
             return Unauthorized();
         }
 
-        private async Task<IActionResult> Auth(User user, AuthModel model)
+        private async Task<string?> Auth(User user, AuthModel model)
         {
-            var authClaims = new List<Claim>
+            var check_pass = await _signInManager.CheckPasswordSignInAsync(user, model.Password, false);
+
+            if (check_pass.Succeeded) //если пароль совпадает
             {
-                new Claim(ClaimTypes.Name, user.UserName),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-            };
+                var authClaims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Name, user.UserName),
+                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                };
 
-            var token = new JwtSecurityToken(
-            issuer: _configuration["JWT: ValidIssuer"],
-            audience: _configuration["JWT: ValidAudience"],
-            claims: authClaims,
-            expires: DateTime.Now.AddHours(3)
-            );
+                var token = new JwtSecurityToken(
+                issuer: _configuration["JWT: ValidIssuer"],
+                audience: _configuration["JWT: ValidAudience"],
+                claims: authClaims,
+                expires: DateTime.Now.AddHours(3)
+                );
 
-            var stringToken = new JwtSecurityTokenHandler().WriteToken(token);
+                var stringToken = new JwtSecurityTokenHandler().WriteToken(token);
 
-            return Ok(new
-            {
-                stringToken,
-                expiration = token.ValidTo
-            });
+                return stringToken;
+            }
+
+            return null;
         }
 
         [HttpPost("logout")]
