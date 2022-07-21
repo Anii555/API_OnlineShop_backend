@@ -31,9 +31,19 @@ namespace API_OnlineShop_backend.Controllers
 
             if (userExists != null) //если пользователь существует
             {
-                //проверяем пароль и, в случае успеха, авторизовываем
-                return await Auth(userExists, model);
+                var check_pass = await _signInManager.CheckPasswordSignInAsync(userExists, model.Password, false);
+
+                if (check_pass.Succeeded) //если пароль совпадает
+                {
+                    //авторизуем
+                    return await Auth(userExists, model);
+                }
+
+                //если пароль не совпадает, то
+                //просим ввести другой
+                return Conflict("Неверный логин или пароль. Повторите попытку.");
             }
+
             //если не существует, то
             //добавляем нового пользователя
             var user = new User { UserName = model.Login };
@@ -57,50 +67,44 @@ namespace API_OnlineShop_backend.Controllers
 
             if (userExists != null) //если пользователь существует
             {
-                //проверяем пароль и, в случае успеха, авторизовываем
-                return await Auth(userExists, model);
+                var check_pass = await _signInManager.CheckPasswordSignInAsync(userExists, model.Password, false);
+
+                if (check_pass.Succeeded) //если пароль совпадает
+                {
+                    //проверяем пароль и, в случае успеха, авторизовываем
+                    return await Auth(userExists, model);
+                }
+
+                //если пароль не совпадает, то
+                //просим ввести другой
+                return Conflict("Неверный логин или пароль. Повторите попытку.");
             }
 
             return Unauthorized();
         }
 
-        public async Task<IActionResult> Auth([FromBody] User userExists, AuthModel model)
+        private async Task<IActionResult> Auth(User user, AuthModel model)
         {
-            var result = await _signInManager.CheckPasswordSignInAsync(userExists, model.Password, false);
-
-            if (result.Succeeded) //если пароль совпадает
+            var authClaims = new List<Claim>
             {
-                var userRoles = await _userManager.GetRolesAsync(userExists);
+                new Claim(ClaimTypes.Name, user.UserName),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+            };
 
-                var authClaims = new List<Claim>
-                    {
-                    new Claim(ClaimTypes.Name, userExists.UserName),
-                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                    };
+            var token = new JwtSecurityToken(
+            issuer: _configuration["JWT: ValidIssuer"],
+            audience: _configuration["JWT: ValidAudience"],
+            claims: authClaims,
+            expires: DateTime.Now.AddHours(3)
+            );
 
-                foreach (var userRole in userRoles)
-                {
-                    authClaims.Add(new Claim(ClaimTypes.Role, userRole));
-                }
+            var stringToken = new JwtSecurityTokenHandler().WriteToken(token);
 
-                var token = new JwtSecurityToken(
-                issuer: _configuration["JWT: ValidIssuer"],
-                audience: _configuration["JWT: ValidAudience"],
-                claims: authClaims,
-                expires: DateTime.Now.AddHours(3)
-                );
-
-                var stringToken = new JwtSecurityTokenHandler().WriteToken(token);
-
-                return Ok(new
-                {
-                    stringToken,
-                    expiration = token.ValidTo
-                });
-            }
-            //если пароль не совпадает, то
-            //просим ввести другой
-            return Conflict("Аккаунт с таким логином уже существует.");
+            return Ok(new
+            {
+                stringToken,
+                expiration = token.ValidTo
+            });
         }
 
         [HttpPost("logout")]
