@@ -4,10 +4,11 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
+using ProductsLibrary.DB_Context;
 
 namespace ProductsLibrary
 {
-    public partial class NorthwindContext : IdentityDbContext<IdentityUser, IdentityRole, string> //Guid
+    public partial class NorthwindContext : IdentityDbContext<User, IdentityRole, string> //Guid
     {
         public NorthwindContext(DbContextOptions<NorthwindContext> options)
             : base(options)

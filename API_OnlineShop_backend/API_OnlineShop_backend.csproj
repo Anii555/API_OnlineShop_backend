@@ -15,6 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.7" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="6.0.6" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.6" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Abstractions" Version="2.2.0" />
@@ -34,7 +35,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ProductsLibrary\ProductsLibrary\ProductsLibrary.csproj" />
-    <ProjectReference Include="ProductsLibrary\ProductsLibrary\ProductsLibrary.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="IdentityAuth\" />
   </ItemGroup>
 
 </Project>
